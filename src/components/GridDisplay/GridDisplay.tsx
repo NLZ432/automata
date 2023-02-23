@@ -14,46 +14,51 @@ function calculateSizes(windowWidth: number, windowHeight: number, gridSize: num
     return { cellSize: cellSize, canvasSize: canvasSize }; 
 }
 
-export default function GridDisplay(props: {}) {
-    let grid: Grid = new Grid();
-
+export default function GridDisplay(props: { grid: Grid }) {
     const Sketch = (sketch: p5) => {
-        var cellSize: number;
+        let canvasSize: number; 
+        let cellSize: number;
         
         sketch.setup = () => {
-            let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, grid.size);
+            let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, props.grid.size);
+            canvasSize = sizes.canvasSize;
             cellSize = sizes.cellSize; 
-            sketch.createCanvas(sizes.canvasSize, sizes.canvasSize);
+            sketch.createCanvas(canvasSize, canvasSize);
         };
 
         sketch.draw = () => {
             sketch.background(0);
-            sketch.fill(255);
-
-            for (let i = 0; i < grid.size; i++) {
-                for (let j = 0; j < grid.size; j++) {
+            for (let i = 0; i < props.grid.size; i++) {
+                for (let j = 0; j < props.grid.size; j++) {
                     const x = i * cellSize;
                     const y = j * cellSize;
                     
-                    var cellValue = grid.getCell(i, j);
+                    var cellValue = props.grid.getCell(i, j);
                     sketch.fill(cellValue ? 255 : 0);
-                    sketch.stroke(255);
+                    sketch.stroke(100);
 
-                    const gx = x + cellSize * 0.2;
-                    const gy = y + cellSize * 0.2;
-                    sketch.rect(gx, gy, cellSize * 0.6, cellSize * 0.6);
+                    const gx = x + cellSize * 0.1;
+                    const gy = y + cellSize * 0.1;
+                    sketch.rect(gx, gy, cellSize * 0.8, cellSize * 0.8);
                 }
             }
         };
 
         sketch.windowResized = () => {
-            let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, grid.size);
+            let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, props.grid.size);
+            canvasSize = sizes.canvasSize;
             cellSize = sizes.cellSize; 
-            sketch.resizeCanvas(sizes.canvasSize, sizes.canvasSize);
+            sketch.resizeCanvas(canvasSize, canvasSize);
         }
 
         sketch.mouseClicked = () => {
-            grid.update();
+            const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
+            const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
+            if (x >= 0 && x < props.grid.size && y >= 0 && y < props.grid.size)
+            {
+                props.grid.setCell(x, y, true);
+                // props.grid.update();
+            }
         }
     }
 

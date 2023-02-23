@@ -1,7 +1,10 @@
+export type Rule = (grid: Grid, x: number, y: number) => boolean;
 export default class Grid {
     size: number;
     grid: Array<Array<boolean>>;
-    constructor() {
+    rule: Rule;
+    constructor(rule: Rule) {
+        this.rule = rule;
         this.size = 30;
         
         this.grid = [];
@@ -18,12 +21,30 @@ export default class Grid {
         return this.grid[x][y];
     }
 
+    setCell(x: number, y: number, value: boolean): void {
+        this.grid[x][y] = value;
+    }
+
     update() {
+        //initialize new grid
+        let newGrid: Array<Array<boolean>> = [];
+        for (let i = 0; i < this.size; i++)
+        {
+            newGrid.push([]);
+            for (let j = 0; j < this.size; j++) {
+                newGrid[i].push(false);
+            }
+        }
+
+        //apply rule to new grid
         for (let i = 0; i < this.size; i++)
         {
             for (let j = 0; j < this.size; j++) {
-                this.grid[i][j] = (Math.random() > 0.5);
+                newGrid[i][j] = this.rule(this, i, j);
             }
         }
+
+        //update grid
+        this.grid = newGrid;
     }
 }
