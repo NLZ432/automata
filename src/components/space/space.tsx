@@ -1,8 +1,6 @@
 import React, { useEffect, useId } from 'react'
 import p5 from 'p5'
 
-type SketchCleanup = { cleanup: () => void };
-
 const STAR_MAX_DISTANCE = 3;
 const STAR_SPEED = 0.02;
 const STAR_SIZE = 3;
@@ -38,7 +36,7 @@ const Sketch = (sketch: p5) => {
     let stars: Array<Star> = [];
 
     sketch.setup = () => {
-        sketch.createCanvas(sketch.windowWidth/5, sketch.windowHeight/5);
+        sketch.createCanvas(sketch.windowWidth/2, sketch.windowHeight/2);
         for (let i = 0; i < 100; i++) {
             stars.push(new Star());
         }
@@ -61,8 +59,6 @@ const Sketch = (sketch: p5) => {
 }
 
 export default function Space(props: {}) {
-    const width: number = 100;
-    const height: number = 100;
     const myRef: any = React.createRef()
 
     useEffect(() => {

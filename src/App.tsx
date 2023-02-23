@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
 
-import Space from './components/space/space';
+import Grid from './components/grid/grid';
 
 function App() {
   return (
     <div className="App">
-      <Space />
+      <Grid />
     </div>
   );
 }
