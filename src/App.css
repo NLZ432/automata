@@ -41,3 +41,9 @@
     transform: rotate(360deg);
   }
 }
+
+.Playbutton {
+  background-color: transparent;
+  color: #61dafb;
+  border: 2px solid #61dafb; /* Green */
+}

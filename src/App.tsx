@@ -1,43 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
-import GridDisplay from './components/GridDisplay/GridDisplay';
 import Grid, { Rule } from './automata/Grid';
 import { ConwayLife } from './automata/rules/Conway/ConwayLife';
 import { Caves0 } from './automata/rules/Caves/Caves0';
+import GridController from './components/GridController/GridController';
 
 function App() {
-
-  const rule: Rule = (grid, x, y) => {
-    // return grid.getCell(x,y);
-    return true;
-  }
-
-  const grid = new Grid(Caves0); 
-
-  let on = false;
-  const updateRoutine = () => {
-    if (on) {
-      setTimeout(() => {
-        grid.update();
-        updateRoutine(); 
-      }, 200)
-    }
-  }
-
-  const handleClick = () => {
-    on = !on;
-    if (on) {
-      updateRoutine();
-    }
-  }
+  const grid = new Grid(ConwayLife); 
 
   return (
     <div className="App">
-      <GridDisplay grid={grid}/>
-      <button onClick={handleClick}>
-        <p> click </p>
-      </button>
+      <GridController grid={grid}/>
     </div>
   );
 }

@@ -1,9 +1,11 @@
 export type Rule = (grid: Grid, x: number, y: number) => boolean;
 export default class Grid {
-    size: number;
     grid: Array<Array<boolean>>;
+    running: boolean;
+    size: number;
     rule: Rule;
     constructor(rule: Rule) {
+        this.running = false;
         this.rule = rule;
         this.size = 30;
         
