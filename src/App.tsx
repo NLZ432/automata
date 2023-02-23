@@ -3,7 +3,8 @@ import './App.css';
 
 import GridDisplay from './components/GridDisplay/GridDisplay';
 import Grid, { Rule } from './automata/Grid';
-import { ConwayLife } from './automata/rules/ConwayLife';
+import { ConwayLife } from './automata/rules/Conway/ConwayLife';
+import { Caves0 } from './automata/rules/Caves/Caves0';
 
 function App() {
 
@@ -12,7 +13,7 @@ function App() {
     return true;
   }
 
-  const grid = new Grid(ConwayLife); 
+  const grid = new Grid(Caves0); 
 
   let on = false;
   const updateRoutine = () => {

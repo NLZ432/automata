@@ -15,6 +15,8 @@ export default class Grid {
                 this.grid[i].push(false);
             }
         }
+
+        this.randomize();
     }
 
     getCell(x: number, y: number): boolean {
@@ -46,5 +48,14 @@ export default class Grid {
 
         //update grid
         this.grid = newGrid;
+    }
+
+    randomize() {
+        for (let i = 0; i < this.size; i++)
+        {
+            for (let j = 0; j < this.size; j++) {
+                this.grid[i][j] = (Math.random() > 0.5) ? true : false;
+            }
+        }
     }
 }
