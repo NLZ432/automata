@@ -60,4 +60,20 @@ export default class Grid {
             }
         }
     }
+
+    updateRoutine() {
+        if (this.running) {
+            this.update()
+            setTimeout(() => {
+                if (this.running) this.updateRoutine(); 
+            }, 200)
+        }
+    }
+
+    setRunning(val: boolean) {
+        this.running = val;
+        if (this.running) {
+            this.updateRoutine();
+        }
+    }
 }

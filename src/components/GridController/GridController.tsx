@@ -5,25 +5,15 @@ import PlayButton from '../PlayButton/PlayButton'
 
 export default function GridController(props: { grid: Grid }) {
     const [running, setRunning] = useState<boolean>(false);
-
-    const updateRoutine = () => {
-        if (props.grid.running) {
-            setTimeout(() => {
-                if (props.grid.running) props.grid.update();
-                updateRoutine(); 
-            }, 200)
-        }
-    }
-
-    props.grid.running = running;
-    if (props.grid.running) {
-        updateRoutine();
+    const handleSetRunning = (val: boolean) => {
+        props.grid.setRunning(val);
+        setRunning(val);
     }
 
     return (
         <div>
             <GridDisplay grid={props.grid}/>
-            <PlayButton running={running} setRunning={setRunning} />
+            <PlayButton running={running} setRunning={handleSetRunning} />
         </div>
     )
 }
