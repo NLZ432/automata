@@ -18,7 +18,7 @@ export default class Grid {
             }
         }
 
-        this.randomize();
+        // this.randomize();
     }
 
     getCell(x: number, y: number): boolean {
