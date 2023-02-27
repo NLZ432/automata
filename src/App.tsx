@@ -8,9 +8,10 @@ import GridController from './components/GridController/GridController';
 import { UlamWarburton } from './automata/rules/Crystals/UlamWarburton';
 import { UlamOopsies } from './automata/rules/Crystals/UlamOopsies';
 import { Maze } from './automata/rules/Maze/Maze';
+import HyperGrid, { RuleZone } from './automata/HyperGrid';
 
 function App() {
-  const grid = new Grid(Maze); 
+  const grid = new HyperGrid(Maze); 
   return (
     <div className="App">
       <GridController grid={grid}/>

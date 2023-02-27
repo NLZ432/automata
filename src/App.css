@@ -47,3 +47,9 @@
   color: #61dafb;
   border: 2px solid #61dafb; /* Green */
 }
+
+.DisabledRuleButton {
+  background-color: transparent;
+  color: #770000;
+  border: 2px solid #770000; /* Green */
+}

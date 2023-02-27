@@ -66,7 +66,7 @@ export default class Grid {
             this.update()
             setTimeout(() => {
                 if (this.running) this.updateRoutine(); 
-            }, 200)
+            }, 100)
         }
     }
 
@@ -75,5 +75,13 @@ export default class Grid {
         if (this.running) {
             this.updateRoutine();
         }
+    }
+
+    setRule(newRule: Rule) {
+        this.rule = newRule;
+    }
+
+    getRule(): Rule {
+        return this.rule;
     }
 }

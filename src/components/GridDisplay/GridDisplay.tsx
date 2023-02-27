@@ -1,6 +1,9 @@
 import React, { useEffect, useId } from 'react'
 import p5 from 'p5'
 import Grid from '../../automata/Grid';
+import HyperGrid, { RuleZone } from '../../automata/HyperGrid';
+import { Maze } from '../../automata/rules/Maze/Maze';
+import { ConwayLife } from '../../automata/rules/Conway/ConwayLife';
 
 function calculateSizes(windowWidth: number, windowHeight: number, gridSize: number): { cellSize: number, canvasSize: number } {
     let canvasScale: number = 0.8; // fraction of window size
@@ -14,7 +17,7 @@ function calculateSizes(windowWidth: number, windowHeight: number, gridSize: num
     return { cellSize: cellSize, canvasSize: canvasSize }; 
 }
 
-export default function GridDisplay(props: { grid: Grid }) {
+export default function GridDisplay(props: { grid: HyperGrid }) {
     const Sketch = (sketch: p5) => {
         let canvasSize: number; 
         let cellSize: number;
@@ -40,6 +43,22 @@ export default function GridDisplay(props: { grid: Grid }) {
                     const gx = x + cellSize * 0.1;
                     const gy = y + cellSize * 0.1;
                     sketch.rect(gx, gy, cellSize * 0.8, cellSize * 0.8);
+                }
+            }
+
+            if (sketch.mouseX > 0 && sketch.mouseX < canvasSize && sketch.mouseY > 0 && sketch.mouseY < canvasSize) {
+                const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
+                const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
+                
+                if (props.grid.zones.length == 0) {
+                    props.grid.zones.push(new RuleZone(Maze, 10, x, y));
+                }
+                props.grid.zones[0].x = x;
+                props.grid.zones[0].y = y;
+            }
+            else {
+                if (props.grid.zones.length > 0) {
+                    props.grid.zones = [];
                 }
             }
         };
