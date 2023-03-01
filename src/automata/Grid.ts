@@ -4,17 +4,17 @@ export default class Grid {
     running: boolean;
     size: number;
     rule: Rule;
-    constructor(rule: Rule) {
+    constructor(rule: Rule, size: number) {
         this.running = false;
         this.rule = rule;
-        this.size = 30;
+        this.size = size;
         
         this.grid = [];
         for (let i = 0; i < this.size; i++)
         {
             this.grid.push([]);
             for (let j = 0; j < this.size; j++) {
-                this.grid[i].push(false);
+                this.grid[i].push(true);
             }
         }
 
@@ -66,7 +66,7 @@ export default class Grid {
             this.update()
             setTimeout(() => {
                 if (this.running) this.updateRoutine(); 
-            }, 100)
+            }, 10)
         }
     }
 

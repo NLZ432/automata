@@ -13,7 +13,7 @@ import RuleButton from '../RuleButton/RuleButton';
 
 export default function GridController(props: { grid: HyperGrid }) {
     const [running, setRunning] = useState<boolean>(false);
-    const [rule, setRule] = useState<Rule>(() => Caves0);
+    const [rule, setRule] = useState<Rule>(() => props.grid.rule);
 
     const handleSetRunning = (val: boolean) => {
         props.grid.setRunning(val);
