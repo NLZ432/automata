@@ -1,5 +1,5 @@
 .App {
-  background-color: #282c34;
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -43,13 +43,51 @@
 }
 
 .Playbutton {
+  cursor: pointer;
   background-color: transparent;
   color: #61dafb;
-  border: 2px solid #61dafb; /* Green */
+  border: 1px solid #61dafb; /* Green */
 }
 
 .DisabledRuleButton {
   background-color: transparent;
-  color: #770000;
-  border: 2px solid #770000; /* Green */
+  color: #fb61fb;
+  border: 1px solid #61dafb; /* Green */
+}
+
+.CanvasContainer {
+  border: 1px solid #61dafb; /* Green */
+}
+
+
+/* slider style credits: https://codepen.io/jonnaru/ */
+.slider {
+  -webkit-appearance: none;
+  height: 10px;
+  background: #000;
+  outline: none;
+  border: 1px solid #61dafb;
+  border-radius: 8px;
+}
+
+/* for chrome/safari */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 30px;
+  background: #000;
+  cursor: pointer;
+  border: 2px solid #61dafb;
+  border-radius: 4px;
+}
+
+/* for firefox */
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 30px;
+  background: #000;
+  cursor: pointer;
+  border: 5px solid #61dafb;
+  border-radius: 4px;
 }

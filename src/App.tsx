@@ -14,10 +14,12 @@ import { Random1 } from './automata/rules/Random/Random1';
 
 function App() {
   const grid = new HyperGrid(Random1, 50); 
-  let z = new RuleZone(Maze, 14, grid.size / 2, grid.size / 2, 1);
-  let w = new WanderingZone(ConwayLife, 5, grid.size / 2, grid.size / 2, 2, 20);
-  grid.addZone(z);
-  grid.addWanderingZone(w);
+
+  grid.addZone(new RuleZone(Maze, 14, grid.size / 2, grid.size / 2, 1));
+  grid.addWanderingZone(new WanderingZone(ConwayLife, 5, grid.size / 2, grid.size / 2, 2, 40));
+  grid.addWanderingZone(new WanderingZone(ConwayLife, 5, grid.size / 2, grid.size / 2, 2, 40));
+
+  grid.setRunning(true);
 
   return (
     <div className="App">

@@ -5,6 +5,7 @@ import HyperGrid, { RuleZone, WanderingZone } from '../../automata/HyperGrid';
 import { Maze } from '../../automata/rules/Maze/Maze';
 import { ConwayLife } from '../../automata/rules/Conway/ConwayLife';
 import { UlamWarburton } from '../../automata/rules/Crystals/UlamWarburton';
+import { Random1 } from '../../automata/rules/Random/Random1';
 
 function calculateSizes(windowWidth: number, windowHeight: number, gridSize: number): { cellSize: number, canvasSize: number } {
     let canvasScale: number = 0.8; // fraction of window size
@@ -40,9 +41,19 @@ export default function GridDisplay(props: { grid: HyperGrid }) {
                     const x = i * cellSize;
                     const y = j * cellSize;
                     
-                    var cellValue = props.grid.getCell(i, j);
-                    sketch.fill(cellValue ? 255 : 0);
-                    sketch.stroke(100);
+                    let cellValue = props.grid.getCell(i, j);
+                    sketch.fill(cellValue ? 0 : 0);
+                    sketch.stroke(cellValue ? 255 : 0);
+
+                    if (cellValue) {
+                        let rule = props.grid.calculateDominantRule(i, j);
+                        // if (rule == ConwayLife) {
+                        //     sketch.stroke(sketch.color('red'));
+                        // }
+                        if (rule == Random1) {
+                            sketch.stroke(sketch.color('teal'));
+                        }
+                    }
 
                     const gx = x + cellSize * 0.1;
                     const gy = y + cellSize * 0.1;
@@ -87,5 +98,5 @@ export default function GridDisplay(props: { grid: HyperGrid }) {
 		return view.remove; // This removes the duplicate canvas when the component is rerendered.
   	}, []);
   
-    return (<div ref={myRef}></div>)
+    return (<div className="CanvasContainer" ref={myRef}></div>)
 }

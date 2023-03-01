@@ -48,14 +48,13 @@ export class WanderingZone extends RuleZone {
         this.wanderRadius = wanderRadius;
         this.start = { x: x, y: y };
         this.noise = new PerlinNoise();
-        this.clock = 0;
+        this.clock = Math.random() * 1000;
     }
 
     wander() {
         this.clock += 0.01;
         this.x = this.start.x + this.noise.perlin2(this.clock, this.clock) * this.wanderRadius;
         this.y = this.start.y + this.noise.perlin2(this.clock + 200, this.clock + 200) * this.wanderRadius; 
-        console.log(this.x);
     }
 }
 

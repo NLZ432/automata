@@ -1,10 +1,12 @@
 export type Rule = (grid: Grid, x: number, y: number) => boolean;
 export default class Grid {
+    updateInterval: number;
     grid: Array<Array<boolean>>;
     running: boolean;
     size: number;
     rule: Rule;
     constructor(rule: Rule, size: number) {
+        this.updateInterval = 20;
         this.running = false;
         this.rule = rule;
         this.size = size;
@@ -66,7 +68,7 @@ export default class Grid {
             this.update()
             setTimeout(() => {
                 if (this.running) this.updateRoutine(); 
-            }, 10)
+            }, this.updateInterval)
         }
     }
 
@@ -75,6 +77,10 @@ export default class Grid {
         if (this.running) {
             this.updateRoutine();
         }
+    }
+
+    setInterval(val: number) {
+        this.updateInterval = val;
     }
 
     setRule(newRule: Rule) {
