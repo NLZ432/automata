@@ -26,7 +26,7 @@ export default function GridDisplay(props: { grid: HyperGrid }) {
         let cursorZone: RuleZone;
         
         sketch.setup = () => {
-            cursorZone = new RuleZone(UlamWarburton, 0, 0, 0, 1);
+            cursorZone = new RuleZone(ConwayLife, 0, 0, 0, 5);
             props.grid.zones.push(cursorZone);
             let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, props.grid.size);
             canvasSize = sizes.canvasSize;
