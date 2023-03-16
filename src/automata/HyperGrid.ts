@@ -120,5 +120,6 @@ export default class HyperGrid extends Grid {
     addWanderingZone(wzone: WanderingZone) {
         this.wanderingZones.push(wzone);
         this.zones.push(wzone);
+        console.log(wzone);
     }
 }

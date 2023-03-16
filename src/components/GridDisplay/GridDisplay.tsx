@@ -1,4 +1,4 @@
-import React, { useEffect, useId } from 'react'
+import React, { useEffect, useId, useRef } from 'react'
 import p5 from 'p5'
 import Grid from '../../automata/Grid';
 import HyperGrid, { RuleZone, WanderingZone } from '../../automata/HyperGrid';
@@ -6,6 +6,7 @@ import { Maze } from '../../automata/rules/Maze/Maze';
 import { ConwayLife } from '../../automata/rules/Conway/ConwayLife';
 import { UlamWarburton } from '../../automata/rules/Crystals/UlamWarburton';
 import { Random1 } from '../../automata/rules/Random/Random1';
+import { distance } from '../../automata/utils/gridmath';
 
 function calculateSizes(windowWidth: number, windowHeight: number, gridSize: number): { cellSize: number, canvasSize: number } {
     let canvasScale: number = 0.8; // fraction of window size
@@ -19,15 +20,17 @@ function calculateSizes(windowWidth: number, windowHeight: number, gridSize: num
     return { cellSize: cellSize, canvasSize: canvasSize }; 
 }
 
-export default function GridDisplay(props: { grid: HyperGrid }) {
+export default function GridDisplay(props: { grid: HyperGrid, newZone: WanderingZone | null, onClick: (cellX: number, cellY: number) => void }) {
+    const newZoneRef = useRef(props.newZone);
+    newZoneRef.current = props.newZone;
     const Sketch = (sketch: p5) => {
         let canvasSize: number; 
         let cellSize: number;
-        let cursorZone: RuleZone;
+        // let cursorZone: RuleZone;
         
         sketch.setup = () => {
-            cursorZone = new RuleZone(ConwayLife, 0, 0, 0, 5);
-            props.grid.zones.push(cursorZone);
+            // cursorZone = new RuleZone(ConwayLife, 0, 0, 0, 5);
+            // props.grid.zones.push(cursorZone);
             let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, props.grid.size);
             canvasSize = sizes.canvasSize;
             cellSize = sizes.cellSize; 
@@ -61,16 +64,41 @@ export default function GridDisplay(props: { grid: HyperGrid }) {
                 }
             }
 
-            if (sketch.mouseX > 0 && sketch.mouseX < canvasSize && sketch.mouseY > 0 && sketch.mouseY < canvasSize) {
-                const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
-                const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
+            // if (sketch.mouseX > 0 && sketch.mouseX < canvasSize && sketch.mouseY > 0 && sketch.mouseY < canvasSize) {
+            //     const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
+            //     const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
                
-                cursorZone.radius = 10;
-                cursorZone.x = x;
-                cursorZone.y = y;
-            }
-            else {
-                cursorZone.radius = 0;
+            //     cursorZone.radius = 10;
+            //     cursorZone.x = x;
+            //     cursorZone.y = y;
+            // }
+            // else {
+            //     cursorZone.radius = 0;
+            // }
+
+            // draw radii when adding a new zone
+            if (newZoneRef.current != null) {
+                if (newZoneRef.current.radius != 0) { // setting wandering zone
+                    let wander_radius = distance(newZoneRef.current.start.x * cellSize,
+                                    newZoneRef.current.start.y * cellSize, 
+                                    sketch.mouseX,
+                                    sketch.mouseY);
+                    sketch.stroke('red');
+                    sketch.drawingContext.setLineDash([10, 5]);
+                    sketch.circle(newZoneRef.current.start.x * cellSize, newZoneRef.current.start.y * cellSize, wander_radius * 2)
+                    sketch.drawingContext.setLineDash([]);
+
+                    sketch.stroke('red');
+                    sketch.circle(newZoneRef.current.start.x * cellSize, newZoneRef.current.start.y * cellSize, newZoneRef.current.radius * cellSize * 2)
+                }
+                else if (newZoneRef.current.start.x != 0) { // setting radius
+                    let radius = distance(newZoneRef.current.start.x * cellSize,
+                                    newZoneRef.current.start.y * cellSize, 
+                                    sketch.mouseX,
+                                    sketch.mouseY);
+                    sketch.stroke('red');
+                    sketch.circle(newZoneRef.current.start.x * cellSize, newZoneRef.current.start.y * cellSize, radius * 2)
+                }
             }
         };
 
@@ -87,6 +115,7 @@ export default function GridDisplay(props: { grid: HyperGrid }) {
             if (x >= 0 && x < props.grid.size && y >= 0 && y < props.grid.size)
             {
                 props.grid.setCell(x, y, true);
+                props.onClick(x, y);
                 // props.grid.update();
             }
         }

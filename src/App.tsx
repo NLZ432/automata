@@ -15,10 +15,6 @@ import { Random1 } from './automata/rules/Random/Random1';
 function App() {
   const grid = new HyperGrid(Random1, 50); 
 
-  grid.addZone(new RuleZone(Maze, 14, grid.size / 2, grid.size / 2, 1));
-  grid.addWanderingZone(new WanderingZone(ConwayLife, 5, grid.size / 2, grid.size / 2, 2, 40));
-  grid.addWanderingZone(new WanderingZone(ConwayLife, 5, grid.size / 2, grid.size / 2, 2, 40));
-
   grid.setRunning(true);
 
   return (

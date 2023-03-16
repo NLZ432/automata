@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Grid, { Rule } from '../../automata/Grid'
-import HyperGrid from '../../automata/HyperGrid';
+import HyperGrid, { WanderingZone } from '../../automata/HyperGrid';
 import { Caves0 } from '../../automata/rules/Caves/Caves0';
 import { ConwayLife } from '../../automata/rules/Conway/ConwayLife';
 import { UlamOopsies } from '../../automata/rules/Crystals/UlamOopsies';
@@ -12,10 +12,31 @@ import GridDisplay from '../GridDisplay/GridDisplay'
 import PlayButton from '../PlayButton/PlayButton'
 import RuleButton from '../RuleButton/RuleButton';
 import SpeedSlider from '../SpeedSlider/SpeedSlider';
+import { distance } from '../../automata/utils/gridmath'
+import RuleSelect from '../RuleSelect/RuleSelect';
+import NewRuleButton from '../NewRuleButton/NewRuleButton';
+import { rule_map } from '../../automata/utils/rules';
+import ZoneLabel from '../ZoneLabel/ZoneLabel';
+import ZoneList from '../ZoneList/ZoneList';
+
+enum ControllerState {
+  Normal = 0,
+  AddRuleCenter = 1,
+  AddRuleRadius = 2,
+  AddRuleWanderRadius = 3,
+}
 
 export default function GridController(props: { grid: HyperGrid }) {
     const [running, setRunning] = useState<boolean>(props.grid.running);
-    const [rule, setRule] = useState<Rule>(() => props.grid.rule);
+    const [controllerState, setControllerState] = useState<ControllerState>(ControllerState.Normal);
+    const [newZone, setNewZone] = useState<WanderingZone | null>(null);
+    const [baseRule, setBaseRule] = useState<Rule>(() => props.grid.rule);
+
+    //need to use refs because react state doesnt update in the functions below
+    const stateRef = useRef(controllerState);
+    const newZoneRef = useRef(newZone);
+    stateRef.current = controllerState;
+    newZoneRef.current = newZone;
 
     const handleSetRunning = (val: boolean) => {
         props.grid.setRunning(val);
@@ -26,26 +47,53 @@ export default function GridController(props: { grid: HyperGrid }) {
        props.grid.setInterval(val);
     }
 
-    const handleChangeRule = (rule: Rule) => {
-        props.grid.setRule(rule);
-        setRule(() => rule);
+    const handleAddZone = () => {
+        setControllerState(ControllerState.AddRuleCenter);
+        //TODO add a more basic constructor for wandering zone and address priority
+        setNewZone(new WanderingZone(ConwayLife, 0, 0, 0, props.grid.wanderingZones.length + 1, 0));
+    }
+
+    const onGridClick = (cellX: number, cellY: number): void => {
+        console.log(controllerState);
+        console.log(stateRef.current);
+        console.log(newZone);
+        if (stateRef.current == ControllerState.AddRuleCenter) {
+            console.log("center");
+            if (newZoneRef.current != null) {
+                newZoneRef.current.start.x = cellX;
+                newZoneRef.current.start.y = cellY;
+            }
+            setControllerState(ControllerState.AddRuleRadius)
+        }
+        else if (stateRef.current == ControllerState.AddRuleRadius) {
+            console.log("radius");
+            if (newZoneRef.current != null) {
+                let radius = distance(newZoneRef.current.start.x, newZoneRef.current.start.y, cellX, cellY);
+                newZoneRef.current.radius = radius;
+            }
+            setControllerState(ControllerState.AddRuleWanderRadius)
+        }
+        else if (stateRef.current == ControllerState.AddRuleWanderRadius) {
+            console.log("wanderradius");
+            if (newZoneRef.current != null) {
+                let radius = distance(newZoneRef.current.start.x, newZoneRef.current.start.y, cellX, cellY);
+                newZoneRef.current.wanderRadius = radius;
+                props.grid.addWanderingZone(newZoneRef.current);
+            }
+            setControllerState(ControllerState.Normal)
+            setNewZone(null);
+        }
+    }
+
+    const handleSelectRule = (rule: Rule) => {
+        if (newZoneRef.current != null) {
+            newZoneRef.current.rule = rule;
+        }
     }
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <GridDisplay grid={props.grid}/>
-            <div style={{ 
-                            padding: '20px',
-                            display: 'flex',
-                            gap: '10px' 
-                        }}>
-                <RuleButton text="caves" disabled={rule == Caves0} onClick={() => handleChangeRule(Caves0)} />
-                <RuleButton text="life" disabled={rule == ConwayLife} onClick={() => handleChangeRule(ConwayLife)} />
-                <RuleButton text="maze" disabled={rule == Maze} onClick={() => handleChangeRule(Maze)} />
-                <RuleButton text="snowflake" disabled={rule == UlamWarburton} onClick={() => handleChangeRule(UlamWarburton)} />
-                <RuleButton text="oopsies" disabled={rule == UlamOopsies} onClick={() => handleChangeRule(UlamOopsies)} />
-                <RuleButton text="random" disabled={rule == Random1} onClick={() => handleChangeRule(Random1)} />
-            </div>
+            <GridDisplay grid={props.grid} newZone={newZone} onClick={onGridClick}/>
             <div style={{ 
                             padding: '20px',
                             display: 'flex',
@@ -54,6 +102,11 @@ export default function GridController(props: { grid: HyperGrid }) {
                         }}>
                 <PlayButton running={running} setRunning={handleSetRunning} />
                 <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
+            </div>
+            <ZoneList wzones={props.grid.wanderingZones} />
+            <div>
+                { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
+                { controllerState != ControllerState.Normal && <RuleSelect rules={rule_map} default="ConwayLife" onSelect={handleSelectRule}/> }
             </div>
         </div>
     )

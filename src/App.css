@@ -49,6 +49,35 @@
   border: 1px solid #61dafb; /* Green */
 }
 
+.UpButton {
+  cursor: pointer;
+  background-color: transparent;
+  color: #61dafb;
+  border: 1px solid #61dafb; /* Green */
+}
+
+.RuleSelect {
+  cursor: pointer;
+  background-color: transparent;
+  color: #61dafb;
+  border: 1px solid #61dafb; /* Green */
+}
+
+.ZoneLabel {
+  border: 1px solid #61dafb; /* Green */
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: flex;
+  gap: 10px;
+  align-items: row;
+}
+
+.RuleSelectOption {
+  color: #424242;
+}
+
 .DisabledRuleButton {
   background-color: transparent;
   color: #fb61fb;
