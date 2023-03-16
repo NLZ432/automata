@@ -104,10 +104,9 @@ export default function GridController(props: { grid: HyperGrid }) {
                 <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
             </div>
             <ZoneList wzones={props.grid.wanderingZones} />
-            <div>
-                { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
-                { controllerState != ControllerState.Normal && <RuleSelect rules={rule_map} default="ConwayLife" onSelect={handleSelectRule}/> }
-            </div>
+            { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
+            { controllerState != ControllerState.Normal && <RuleSelect rules={rule_map} default="ConwayLife" onSelect={handleSelectRule}/> }
+            { controllerState != ControllerState.Normal && <p>Click the grid three times to define the location, radius, and range of the rule.</p> }
         </div>
     )
 }
