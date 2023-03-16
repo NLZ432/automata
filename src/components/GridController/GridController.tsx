@@ -54,11 +54,7 @@ export default function GridController(props: { grid: HyperGrid }) {
     }
 
     const onGridClick = (cellX: number, cellY: number): void => {
-        console.log(controllerState);
-        console.log(stateRef.current);
-        console.log(newZone);
         if (stateRef.current == ControllerState.AddRuleCenter) {
-            console.log("center");
             if (newZoneRef.current != null) {
                 newZoneRef.current.start.x = cellX;
                 newZoneRef.current.start.y = cellY;
@@ -66,7 +62,6 @@ export default function GridController(props: { grid: HyperGrid }) {
             setControllerState(ControllerState.AddRuleRadius)
         }
         else if (stateRef.current == ControllerState.AddRuleRadius) {
-            console.log("radius");
             if (newZoneRef.current != null) {
                 let radius = distance(newZoneRef.current.start.x, newZoneRef.current.start.y, cellX, cellY);
                 newZoneRef.current.radius = radius;
@@ -74,7 +69,6 @@ export default function GridController(props: { grid: HyperGrid }) {
             setControllerState(ControllerState.AddRuleWanderRadius)
         }
         else if (stateRef.current == ControllerState.AddRuleWanderRadius) {
-            console.log("wanderradius");
             if (newZoneRef.current != null) {
                 let radius = distance(newZoneRef.current.start.x, newZoneRef.current.start.y, cellX, cellY);
                 newZoneRef.current.wanderRadius = radius;
@@ -83,6 +77,11 @@ export default function GridController(props: { grid: HyperGrid }) {
             setControllerState(ControllerState.Normal)
             setNewZone(null);
         }
+    }
+
+    const handleChangeBaseRule = (rule: Rule) => {
+        props.grid.setRule(rule);
+        setBaseRule(() => rule);
     }
 
     const handleSelectRule = (rule: Rule) => {
@@ -102,6 +101,7 @@ export default function GridController(props: { grid: HyperGrid }) {
                         }}>
                 <PlayButton running={running} setRunning={handleSetRunning} />
                 <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
+                <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
             </div>
             <ZoneList wzones={props.grid.wanderingZones} />
             <div>
