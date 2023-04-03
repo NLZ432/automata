@@ -17,7 +17,7 @@ function App() {
 
   // pretty presets :3
   grid.addWanderingZone(new WanderingZone(UlamWarburton, 5, 25, 25, 1, 20))
-  grid.addWanderingZone(new WanderingZone(ConwayLife, 20, 25, 25, 1, 25))
+  grid.addWanderingZone(new WanderingZone(ConwayLife, 20, 25, 25, 2, 25))
 
   grid.setRunning(true);
 
