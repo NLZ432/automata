@@ -63,12 +63,19 @@
   border: 1px solid #61dafb; /* Green */
 }
 
+.ZoneList {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
 .ZoneLabel {
   border: 1px solid #61dafb; /* Green */
   padding-right: 15px;
   padding-left: 15px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   display: flex;
   gap: 10px;
   align-items: row;

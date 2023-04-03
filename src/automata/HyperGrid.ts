@@ -9,9 +9,11 @@ export class RuleZone {
     rule: Rule;
     x: number;
     y: number;
+    active: boolean;
     constructor(rule: Rule, radius: number, x: number, y: number, priority: number) {
         this.priority = priority;
         this.radius = radius;
+        this.active = true;
         this.rule = rule;
         this.x = x;
         this.y = y;
@@ -100,7 +102,7 @@ export default class HyperGrid extends Grid {
         let dominantRule: Rule = this.rule;
         let dominantPriority: number = 0;
 
-        for (const zone of this.zones) {
+        for (const zone of this.zones.filter(z => z.active)) {
             const zx = zone.getX;
             const zy = zone.getY;
             const r = distance(x, y, zx, zy);

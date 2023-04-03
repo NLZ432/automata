@@ -25,10 +25,15 @@ export default function ZoneList(props: { wzones: Array<WanderingZone> }) {
         }
     }
 
+    const onDelete = (wzone: WanderingZone) => {
+        wzone.active = false;
+        setState(!state);
+    }
+
     return (
-        <div>
-            { props.wzones.sort((a, b) => a.priority - b.priority).map((wzone, index) => (
-                <ZoneLabel key={index} wzone={wzone} onIncrease={onPriorityIncrease} onDecrease={onPriorityDecrease} />
+        <div className='ZoneList'>
+            { props.wzones.filter(z => z.active).sort((a, b) => a.priority - b.priority).map((wzone, index) => (
+                <ZoneLabel key={index} wzone={wzone} onIncrease={onPriorityIncrease} onDecrease={onPriorityDecrease} onDelete={onDelete}/>
             ))}
         </div>
     );

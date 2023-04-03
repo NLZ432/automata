@@ -91,22 +91,26 @@ export default function GridController(props: { grid: HyperGrid }) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <GridDisplay grid={props.grid} newZone={newZone} onClick={onGridClick}/>
-            <div style={{ 
-                            padding: '20px',
-                            display: 'flex',
-                            gap: '10px',
-                            alignItems: 'center'
-                        }}>
-                <PlayButton running={running} setRunning={handleSetRunning} />
-                <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
-                <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
+        <div style={{display: 'flex', flexDirection: 'row', gap: '25px', alignItems: ''}}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <GridDisplay grid={props.grid} newZone={newZone} onClick={onGridClick}/>
+                { controllerState != ControllerState.Normal && <p>Click the grid three times to define the location, radius, and range of the rule.</p> }
+                <div style={{ 
+                                padding: '20px',
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center'
+                            }}>
+                    <PlayButton running={running} setRunning={handleSetRunning} />
+                    <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
+                    <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
+                    { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
+                </div>
             </div>
-            <ZoneList wzones={props.grid.wanderingZones} />
-            { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
-            { controllerState != ControllerState.Normal && <RuleSelect rules={rule_map} default="ConwayLife" onSelect={handleSelectRule}/> }
-            { controllerState != ControllerState.Normal && <p>Click the grid three times to define the location, radius, and range of the rule.</p> }
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <ZoneList wzones={props.grid.wanderingZones} />
+                { controllerState != ControllerState.Normal && <RuleSelect rules={rule_map} default="ConwayLife" onSelect={handleSelectRule}/> }
+            </div>
         </div>
     )
 }
