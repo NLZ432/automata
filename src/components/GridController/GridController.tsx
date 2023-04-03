@@ -91,7 +91,7 @@ export default function GridController(props: { grid: HyperGrid }) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'row', gap: '25px', alignItems: ''}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: ''}}>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <GridDisplay grid={props.grid} newZone={newZone} onClick={onGridClick}/>
                 { controllerState != ControllerState.Normal && <p>Click the grid three times to define the location, radius, and range of the rule.</p> }
