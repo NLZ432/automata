@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useRef } from 'react'
 import p5 from 'p5'
-import Grid from '../../automata/Grid';
+import Grid, { Rule } from '../../automata/Grid';
 import HyperGrid, { RuleZone, WanderingZone } from '../../automata/HyperGrid';
 import { Maze } from '../../automata/rules/Maze/Maze';
 import { ConwayLife } from '../../automata/rules/Conway/ConwayLife';
@@ -24,13 +24,11 @@ export default function GridDisplay(props: { grid: HyperGrid, newZone: Wandering
     const newZoneRef = useRef(props.newZone);
     newZoneRef.current = props.newZone;
     const Sketch = (sketch: p5) => {
+        let cursorZone: RuleZone;
         let canvasSize: number; 
         let cellSize: number;
-        // let cursorZone: RuleZone;
         
         sketch.setup = () => {
-            // cursorZone = new RuleZone(ConwayLife, 0, 0, 0, 5);
-            // props.grid.zones.push(cursorZone);
             let sizes = calculateSizes(sketch.windowWidth, sketch.windowHeight, props.grid.size);
             canvasSize = sizes.canvasSize;
             cellSize = sizes.cellSize; 
@@ -119,6 +117,23 @@ export default function GridDisplay(props: { grid: HyperGrid, newZone: Wandering
                 // props.grid.update();
             }
         }
+        
+        // on mouse hovered in range of canvas
+        sketch.mouseMoved = () => {
+            const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
+            const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
+            if (x >= 0 && x < props.grid.size && y >= 0 && y < props.grid.size)
+            {
+                props.grid.getCursorZone().radius = 10;
+                props.grid.getCursorZone().x = x;
+                props.grid.getCursorZone().y = y;
+            }
+            else {
+                props.grid.getCursorZone().radius = 0;
+            }
+        }
+
+
     }
 
     const myRef: any = React.createRef()

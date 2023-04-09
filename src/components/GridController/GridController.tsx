@@ -15,7 +15,7 @@ import SpeedSlider from '../SpeedSlider/SpeedSlider';
 import { distance } from '../../automata/utils/gridmath'
 import RuleSelect from '../RuleSelect/RuleSelect';
 import NewRuleButton from '../NewRuleButton/NewRuleButton';
-import { rule_map } from '../../automata/utils/rules';
+import { getRuleText, rule_map } from '../../automata/utils/rules';
 import ZoneLabel from '../ZoneLabel/ZoneLabel';
 import ZoneList from '../ZoneList/ZoneList';
 
@@ -90,6 +90,10 @@ export default function GridController(props: { grid: HyperGrid }) {
         }
     }
 
+    const handleChangeCursorRule = (rule: Rule) => {
+        props.grid.getCursorZone().rule = rule;
+    }
+
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: ''}}>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -105,6 +109,14 @@ export default function GridController(props: { grid: HyperGrid }) {
                     <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
                     <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
                     { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
+                </div>
+                <div style={{ 
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center'
+                            }}>
+                    <p>{"Cursor rule: "}</p>
+                    <RuleSelect rules={rule_map} default={getRuleText(props.grid.getCursorZone().rule)} onSelect={handleChangeCursorRule}/>
                 </div>
             </div>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

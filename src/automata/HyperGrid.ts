@@ -1,5 +1,6 @@
 import Grid, { Rule } from "./Grid";
 import { ConwayLife } from "./rules/Conway/ConwayLife";
+import { UlamWarburton } from "./rules/Crystals/UlamWarburton";
 import { distance } from "./utils/gridmath";
 import { PerlinNoise } from "./utils/perlin";
 
@@ -63,10 +64,12 @@ export class WanderingZone extends RuleZone {
 export default class HyperGrid extends Grid {
     zones: Array<RuleZone>;
     wanderingZones: Array<WanderingZone>;
+    cursorZone: RuleZone;
     constructor(rule: Rule, size: number) {
        super(rule, size);
+       this.cursorZone = new RuleZone(UlamWarburton, 0, 0, 0, 100);
        this.wanderingZones = [];
-       this.zones = [];
+       this.zones = [this.cursorZone];
     }
 
     update() {
@@ -123,5 +126,9 @@ export default class HyperGrid extends Grid {
         this.wanderingZones.push(wzone);
         this.zones.push(wzone);
         console.log(wzone);
+    }
+
+    getCursorZone() {
+        return this.cursorZone;
     }
 }
