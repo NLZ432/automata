@@ -11,6 +11,7 @@ export interface Example {
     cursorRule: Rule;
     wanderingZones: WanderingZone[];
     initialState: (size: number) => boolean[][];  // Function to generate initial state based on grid size
+    speed?: number;  // Optional update interval in milliseconds
 }
 
 // Helper to create a glider pattern
@@ -42,7 +43,8 @@ export const examples: Example[] = [
         baseRule: ConwayLife,
         cursorRule: ConwayLife,
         wanderingZones: [],
-        initialState: createGlider
+        initialState: createGlider,
+        speed: 100  // Moderate speed for watching glider movement
     },
     {
         name: "Crystal Growth",
@@ -50,7 +52,8 @@ export const examples: Example[] = [
         baseRule: UlamWarburton,
         cursorRule: UlamWarburton,
         wanderingZones: [],
-        initialState: createCrystalSeed
+        initialState: createCrystalSeed,
+        speed: 50  // Faster speed for crystal growth
     },
     {
         name: "Multi-Zone Example",
@@ -62,5 +65,6 @@ export const examples: Example[] = [
             new WanderingZone(UlamWarburton, 30, 30, 12, 2, 8)
         ],
         initialState: size => Array(size).fill(null).map(() => Array(size).fill(false))
+        // No speed specified - will use current speed
     }
 ]; 

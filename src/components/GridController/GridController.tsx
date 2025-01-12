@@ -34,6 +34,7 @@ export default function GridController(props: { grid: HyperGrid }) {
     const [controllerState, setControllerState] = useState<ControllerState>(ControllerState.Normal);
     const [newZone, setNewZone] = useState<WanderingZone | null>(null);
     const [baseRule, setBaseRule] = useState<Rule>(() => props.grid.rule);
+    const [speed, setSpeed] = useState<number>(props.grid.updateInterval);
 
     //need to use refs because react state doesnt update in the functions below
     const stateRef = useRef(controllerState);
@@ -48,6 +49,7 @@ export default function GridController(props: { grid: HyperGrid }) {
 
     const changeInterval = (val: number) => {
        props.grid.setInterval(val);
+       setSpeed(val);
     }
 
     const handleAddZone = () => {
@@ -127,6 +129,12 @@ export default function GridController(props: { grid: HyperGrid }) {
         // Update cursor rule
         props.grid.getCursorZone().rule = example.cursorRule;
         
+        // Update speed if specified in the example
+        if (example.speed !== undefined) {
+            props.grid.setInterval(example.speed);
+            setSpeed(example.speed);
+        }
+        
         // Add wandering zones
         example.wanderingZones.forEach(zone => {
             props.grid.addWanderingZone(zone);
@@ -156,7 +164,7 @@ export default function GridController(props: { grid: HyperGrid }) {
                                 alignItems: 'center'
                             }}>
                     <PlayButton running={running} setRunning={handleSetRunning} />
-                    <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
+                    <SpeedSlider min={0} max={1000} setInterval={changeInterval} value={speed} />
                     <RuleSelect 
                         key={`base-rule-${getRuleText(props.grid.rule)}`}
                         rules={rule_map} 
