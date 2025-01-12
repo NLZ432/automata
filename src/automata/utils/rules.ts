@@ -5,6 +5,7 @@ import { Random0 } from '../../automata/rules/Random/Random0';
 import { Random1 } from '../../automata/rules/Random/Random1';
 import { Caves0 } from '../../automata/rules/Caves/Caves0';
 import { Maze } from '../../automata/rules/Maze/Maze';
+import { Replicator } from '../../automata/rules/Replicator/Replicator';
 import { Rule } from '../Grid';
 
 export type RuleMap = {
@@ -18,7 +19,8 @@ export const rule_map: RuleMap = {
     "Random0":Random0,
     "Random1":Random1,
     "Caves0":Caves0,
-    "Maze":Maze
+    "Maze":Maze,
+    "Replicator":Replicator
 };
 
 export const getRuleText = (rule: Rule) => {
