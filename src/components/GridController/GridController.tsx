@@ -19,6 +19,8 @@ import { getRuleText, rule_map } from '../../automata/utils/rules';
 import ZoneLabel from '../ZoneLabel/ZoneLabel';
 import ZoneList from '../ZoneList/ZoneList';
 import ClearButton from '../ClearButton/ClearButton';
+import ExampleSelect from '../ExampleSelect/ExampleSelect';
+import { Example } from '../../automata/examples';
 
 enum ControllerState {
   Normal = 0,
@@ -83,20 +85,63 @@ export default function GridController(props: { grid: HyperGrid }) {
     const handleChangeBaseRule = (rule: Rule) => {
         props.grid.setRule(rule);
         setBaseRule(() => rule);
+        // Force re-render to update UI
+        setControllerState(prev => prev);
     }
 
     const handleSelectRule = (rule: Rule) => {
         if (newZoneRef.current != null) {
             newZoneRef.current.rule = rule;
+            // Force re-render to update UI
+            setControllerState(prev => prev);
         }
     }
 
     const handleChangeCursorRule = (rule: Rule) => {
         props.grid.getCursorZone().rule = rule;
+        // Force re-render to update UI
+        setControllerState(prev => prev);
     }
 
     const handleClearGrid = () => {
         props.grid.clear();
+    }
+
+    const handleLoadExample = (example: Example) => {
+        // Stop any running simulation
+        if (running) {
+            handleSetRunning(false);
+        }
+
+        // Clear existing state
+        props.grid.clear();
+        
+        // Clear all zones except cursor zone
+        props.grid.wanderingZones = [];
+        props.grid.zones = [props.grid.getCursorZone()];  // Reset zones array to only contain cursor zone
+
+        // Set up new state
+        props.grid.setRule(example.baseRule);
+        setBaseRule(() => example.baseRule);  // Update the base rule state for UI
+        
+        // Update cursor rule
+        props.grid.getCursorZone().rule = example.cursorRule;
+        
+        // Add wandering zones
+        example.wanderingZones.forEach(zone => {
+            props.grid.addWanderingZone(zone);
+        });
+
+        // Set initial state
+        const initialState = example.initialState(props.grid.size);
+        for (let i = 0; i < props.grid.size; i++) {
+            for (let j = 0; j < props.grid.size; j++) {
+                props.grid.setCell(i, j, initialState[i][j]);
+            }
+        }
+
+        // Force a re-render of the component to update the rule selectors
+        setControllerState(prev => prev);
     }
 
     return (
@@ -112,7 +157,12 @@ export default function GridController(props: { grid: HyperGrid }) {
                             }}>
                     <PlayButton running={running} setRunning={handleSetRunning} />
                     <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
-                    <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
+                    <RuleSelect 
+                        key={`base-rule-${getRuleText(props.grid.rule)}`}
+                        rules={rule_map} 
+                        default={getRuleText(props.grid.rule)} 
+                        onSelect={handleChangeBaseRule}
+                    />
                     <ClearButton onClick={handleClearGrid} />
                     { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
                 </div>
@@ -122,12 +172,32 @@ export default function GridController(props: { grid: HyperGrid }) {
                                 alignItems: 'center'
                             }}>
                     <p>{"Cursor rule: "}</p>
-                    <RuleSelect rules={rule_map} default={getRuleText(props.grid.getCursorZone().rule)} onSelect={handleChangeCursorRule}/>
+                    <RuleSelect 
+                        key={`cursor-rule-${getRuleText(props.grid.getCursorZone().rule)}`}
+                        rules={rule_map} 
+                        default={getRuleText(props.grid.getCursorZone().rule)} 
+                        onSelect={handleChangeCursorRule}
+                    />
+                </div>
+                <div style={{ 
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center',
+                                marginTop: '10px'
+                            }}>
+                    <ExampleSelect grid={props.grid} onSelect={handleLoadExample} />
                 </div>
             </div>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <ZoneList wzones={props.grid.wanderingZones} />
-                { controllerState != ControllerState.Normal && <RuleSelect rules={rule_map} default="ConwayLife" onSelect={handleSelectRule}/> }
+                { controllerState != ControllerState.Normal && 
+                    <RuleSelect 
+                        key={`new-zone-rule-${newZone ? getRuleText(newZone.rule) : 'default'}`}
+                        rules={rule_map} 
+                        default="ConwayLife" 
+                        onSelect={handleSelectRule}
+                    /> 
+                }
             </div>
         </div>
     )
