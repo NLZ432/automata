@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 
-import Grid, { Rule } from './automata/Grid';
 import { ConwayLife } from './automata/rules/Conway/ConwayLife';
-import { Caves0 } from './automata/rules/Caves/Caves0';
-import GridController from './components/GridController/GridController';
 import { UlamWarburton } from './automata/rules/Crystals/UlamWarburton';
-import { UlamOopsies } from './automata/rules/Crystals/UlamOopsies';
-import { Maze } from './automata/rules/Maze/Maze';
-import HyperGrid, { RuleZone, WanderingZone } from './automata/HyperGrid';
-import { Random0 } from './automata/rules/Random/Random0';
+import GridController from './components/GridController/GridController';
+import HyperGrid, { WanderingZone } from './automata/HyperGrid';
 import { Random1 } from './automata/rules/Random/Random1';
 
 function App() {
