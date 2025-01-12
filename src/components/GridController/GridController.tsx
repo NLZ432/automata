@@ -18,6 +18,7 @@ import NewRuleButton from '../NewRuleButton/NewRuleButton';
 import { getRuleText, rule_map } from '../../automata/utils/rules';
 import ZoneLabel from '../ZoneLabel/ZoneLabel';
 import ZoneList from '../ZoneList/ZoneList';
+import ClearButton from '../ClearButton/ClearButton';
 
 enum ControllerState {
   Normal = 0,
@@ -94,6 +95,10 @@ export default function GridController(props: { grid: HyperGrid }) {
         props.grid.getCursorZone().rule = rule;
     }
 
+    const handleClearGrid = () => {
+        props.grid.clear();
+    }
+
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: ''}}>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -108,6 +113,7 @@ export default function GridController(props: { grid: HyperGrid }) {
                     <PlayButton running={running} setRunning={handleSetRunning} />
                     <SpeedSlider min={0} max={1000} setInterval={changeInterval} />
                     <RuleSelect rules={rule_map} default="Random1" onSelect={handleChangeBaseRule}/>
+                    <ClearButton onClick={handleClearGrid} />
                     { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
                 </div>
                 <div style={{ 

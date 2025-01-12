@@ -88,4 +88,12 @@ export default class Grid {
     getRule(): Rule {
         return this.rule;
     }
+
+    clear() {
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                this.grid[i][j] = false;
+            }
+        }
+    }
 }
