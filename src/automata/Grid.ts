@@ -6,20 +6,18 @@ export default class Grid {
     size: number;
     rule: Rule;
     constructor(rule: Rule, size: number) {
+        // Initialize basic grid properties
         this.updateInterval = 20;
         this.running = false;
         this.rule = rule;
         this.size = size;
         
-        this.grid = [];
-        for (let i = 0; i < this.size; i++)
-        {
-            this.grid.push([]);
-            for (let j = 0; j < this.size; j++) {
-                this.grid[i].push(true);
-            }
-        }
+        // Create 2D grid array filled with true values
+        this.grid = Array(this.size)
+            .fill(null)
+            .map(() => Array(this.size).fill(true));
 
+        // Optionally randomize the initial state
         // this.randomize();
     }
 
