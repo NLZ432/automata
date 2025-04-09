@@ -20,6 +20,7 @@ import ZoneLabel from '../ZoneLabel/ZoneLabel';
 import ZoneList from '../ZoneList/ZoneList';
 import ClearButton from '../ClearButton/ClearButton';
 import ExampleSelect from '../ExampleSelect/ExampleSelect';
+import RandomizeButton from '../RandomizeButton/RandomizeButton';
 import { Example } from '../../automata/examples';
 
 enum ControllerState {
@@ -152,6 +153,65 @@ export default function GridController(props: { grid: HyperGrid }) {
         setControllerState(prev => prev);
     }
 
+    const handleRandomize = () => {
+        // Stop any running simulation
+        if (running) {
+            handleSetRunning(false);
+        }
+
+        // Clear existing state
+        props.grid.clear();
+        
+        // Clear all zones except cursor zone
+        props.grid.wanderingZones = [];
+        props.grid.zones = [props.grid.getCursorZone()];
+
+        // Get all available rules
+        const rules = Object.values(rule_map);
+        
+        // Create 3-5 random wandering zones
+        const numZones = Math.floor(Math.random() * 3) + 3; // Random number between 3 and 5
+        
+        for (let i = 0; i < numZones; i++) {
+            const randomRule = rules[Math.floor(Math.random() * rules.length)];
+            const radius = Math.floor(Math.random() * 15) + 5; // Random radius between 5 and 20
+            const x = Math.floor(Math.random() * (props.grid.size - 20)) + 10; // Random x between 10 and size-10
+            const y = Math.floor(Math.random() * (props.grid.size - 20)) + 10; // Random y between 10 and size-10
+            const wanderRadius = Math.floor(Math.random() * 15) + 10; // Random wander radius between 10 and 25
+            
+            const newZone = new WanderingZone(randomRule, radius, x, y, i + 1, wanderRadius);
+            props.grid.addWanderingZone(newZone);
+        }
+
+        // Set a random base rule
+        const randomBaseRule = rules[Math.floor(Math.random() * rules.length)];
+        props.grid.setRule(randomBaseRule);
+        setBaseRule(() => randomBaseRule);
+
+        // Set a random cursor rule
+        const randomCursorRule = rules[Math.floor(Math.random() * rules.length)];
+        props.grid.getCursorZone().rule = randomCursorRule;
+
+        // Set a random speed between 50 and 200
+        const randomSpeed = Math.floor(Math.random() * 150) + 50;
+        props.grid.setInterval(randomSpeed);
+        setSpeed(randomSpeed);
+
+        // Set random cells alive (about 20% of the grid)
+        const numCellsToActivate = Math.floor(props.grid.size * props.grid.size * 0.2);
+        for (let i = 0; i < numCellsToActivate; i++) {
+            const x = Math.floor(Math.random() * props.grid.size);
+            const y = Math.floor(Math.random() * props.grid.size);
+            props.grid.setCell(x, y, true);
+        }
+
+        // Start the simulation
+        handleSetRunning(true);
+
+        // Force a re-render
+        setControllerState(prev => prev);
+    }
+
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: ''}}>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
@@ -172,6 +232,7 @@ export default function GridController(props: { grid: HyperGrid }) {
                         onSelect={handleChangeBaseRule}
                     />
                     <ClearButton onClick={handleClearGrid} />
+                    <RandomizeButton onClick={handleRandomize} />
                     { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
                 </div>
                 <div style={{ 
