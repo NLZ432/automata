@@ -22,6 +22,7 @@ import ClearButton from '../ClearButton/ClearButton';
 import ExampleSelect from '../ExampleSelect/ExampleSelect';
 import RandomizeButton from '../RandomizeButton/RandomizeButton';
 import { Example } from '../../automata/examples';
+import ColorSwitch from '../ColorSwitch/ColorSwitch';
 
 enum ControllerState {
   Normal = 0,
@@ -36,6 +37,8 @@ export default function GridController(props: { grid: HyperGrid }) {
     const [newZone, setNewZone] = useState<WanderingZone | null>(null);
     const [baseRule, setBaseRule] = useState<Rule>(() => props.grid.rule);
     const [speed, setSpeed] = useState<number>(props.grid.updateInterval);
+    const [useRandomColors, setUseRandomColors] = useState<boolean>(false);
+    const lastRandomSpeedRef = useRef<number>(speed);
 
     //need to use refs because react state doesnt update in the functions below
     const stateRef = useRef(controllerState);
@@ -192,11 +195,6 @@ export default function GridController(props: { grid: HyperGrid }) {
         const randomCursorRule = rules[Math.floor(Math.random() * rules.length)];
         props.grid.getCursorZone().rule = randomCursorRule;
 
-        // Set a random speed between 50 and 200
-        const randomSpeed = Math.floor(Math.random() * 150) + 50;
-        props.grid.setInterval(randomSpeed);
-        setSpeed(randomSpeed);
-
         // Set random cells alive (about 20% of the grid)
         const numCellsToActivate = Math.floor(props.grid.size * props.grid.size * 0.2);
         for (let i = 0; i < numCellsToActivate; i++) {
@@ -205,17 +203,22 @@ export default function GridController(props: { grid: HyperGrid }) {
             props.grid.setCell(x, y, true);
         }
 
-        // Start the simulation
-        handleSetRunning(true);
-
         // Force a re-render
         setControllerState(prev => prev);
+        
+        // Start the simulation
+        handleSetRunning(true);
     }
 
     return (
         <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: ''}}>
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                <GridDisplay grid={props.grid} newZone={newZone} onClick={onGridClick}/>
+                <GridDisplay 
+                    grid={props.grid} 
+                    newZone={newZone} 
+                    onClick={onGridClick}
+                    useRandomColors={useRandomColors}
+                />
                 { controllerState != ControllerState.Normal && <p style={{color: 'white'}}>Click the grid three times to define the location, radius, and range of the rule.</p> }
                 <div style={{ 
                                 padding: '20px',
@@ -233,6 +236,7 @@ export default function GridController(props: { grid: HyperGrid }) {
                     />
                     <ClearButton onClick={handleClearGrid} />
                     <RandomizeButton onClick={handleRandomize} />
+                    <ColorSwitch checked={useRandomColors} onChange={setUseRandomColors} />
                     { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
                 </div>
                 <div style={{ 

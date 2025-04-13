@@ -20,9 +20,53 @@ function calculateSizes(windowWidth: number, windowHeight: number, gridSize: num
     return { cellSize: cellSize, canvasSize: canvasSize }; 
 }
 
-export default function GridDisplay(props: { grid: HyperGrid, newZone: WanderingZone | null, onClick: (cellX: number, cellY: number) => void }) {
+// Function to generate a random base color
+function getRandomBaseColor(sketch: p5): p5.Color {
+    // Neon color palette
+    const neonColors = [
+        sketch.color(255, 0, 128),   // Neon pink
+        sketch.color(0, 255, 255),   // Neon cyan
+        sketch.color(255, 255, 0),   // Neon yellow
+        sketch.color(0, 255, 0),     // Neon green
+        sketch.color(255, 0, 255),   // Neon magenta
+        sketch.color(0, 128, 255),   // Neon blue
+        sketch.color(255, 128, 0),   // Neon orange
+        sketch.color(128, 0, 255),   // Neon purple
+    ];
+    
+    // Return a random neon color
+    return neonColors[Math.floor(Math.random() * neonColors.length)];
+}
+
+// Function to generate a shade of a base color
+function getShadeOfColor(baseColor: p5.Color, sketch: p5): p5.Color {
+    // Get the base RGB values
+    const r = sketch.red(baseColor);
+    const g = sketch.green(baseColor);
+    const b = sketch.blue(baseColor);
+    
+    // Create a shade by adjusting brightness (random between 80% and 120% of original)
+    // Using a smaller range to keep the neon effect
+    const shadeFactor = 0.8 + Math.random() * 0.4;
+    
+    return sketch.color(
+        Math.min(255, Math.floor(r * shadeFactor)),
+        Math.min(255, Math.floor(g * shadeFactor)),
+        Math.min(255, Math.floor(b * shadeFactor))
+    );
+}
+
+export default function GridDisplay(props: { 
+    grid: HyperGrid, 
+    newZone: WanderingZone | null, 
+    onClick: (cellX: number, cellY: number) => void,
+    useRandomColors: boolean 
+}) {
     const newZoneRef = useRef(props.newZone);
     newZoneRef.current = props.newZone;
+    const zoneColors = useRef<Map<RuleZone, p5.Color>>(new Map());
+    const cellShades = useRef<Map<string, p5.Color>>(new Map());
+
     const Sketch = (sketch: p5) => {
         let cursorZone: RuleZone;
         let canvasSize: number; 
@@ -43,17 +87,44 @@ export default function GridDisplay(props: { grid: HyperGrid, newZone: Wandering
                     const y = j * cellSize;
                     
                     let cellValue = props.grid.getCell(i, j);
-                    sketch.fill(cellValue ? 0 : 0);
-                    sketch.stroke(cellValue ? 255 : 0);
-
+                    const cellKey = `${i},${j}`;
+                    
                     if (cellValue) {
-                        let rule = props.grid.calculateDominantRule(i, j);
-                        // if (rule == ConwayLife) {
-                        //     sketch.stroke(sketch.color('red'));
-                        // }
-                        if (rule == Random1) {
-                            sketch.stroke(sketch.color('teal'));
+                        let dominantRule = props.grid.calculateDominantRule(i, j);
+                        let dominantZone = props.grid.zones.find(z => z.rule === dominantRule && z.active);
+                        
+                        if (dominantZone) {
+                            // Get or create base color for this zone
+                            if (!zoneColors.current.has(dominantZone)) {
+                                zoneColors.current.set(dominantZone, getRandomBaseColor(sketch));
+                            }
+                            
+                            const baseColor = zoneColors.current.get(dominantZone)!;
+                            
+                            // Get or create shade for this cell
+                            if (!cellShades.current.has(cellKey)) {
+                                cellShades.current.set(cellKey, getShadeOfColor(baseColor, sketch));
+                            }
+                            
+                            const cellColor = cellShades.current.get(cellKey)!;
+                            
+                            // Apply colors only if useRandomColors is true
+                            if (props.useRandomColors) {
+                                sketch.fill(cellColor);
+                                sketch.stroke(cellColor);
+                            } else {
+                                // Use white for all cells when colors are off
+                                sketch.fill(255);
+                                sketch.stroke(255);
+                            }
+                        } else {
+                            // Default color for cells not in any zone
+                            sketch.fill(255);
+                            sketch.stroke(255);
                         }
+                    } else {
+                        sketch.fill(0);
+                        sketch.stroke(0);
                     }
 
                     const gx = x + cellSize * 0.1;
@@ -61,18 +132,6 @@ export default function GridDisplay(props: { grid: HyperGrid, newZone: Wandering
                     sketch.rect(gx, gy, cellSize * 0.8, cellSize * 0.8);
                 }
             }
-
-            // if (sketch.mouseX > 0 && sketch.mouseX < canvasSize && sketch.mouseY > 0 && sketch.mouseY < canvasSize) {
-            //     const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
-            //     const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
-               
-            //     cursorZone.radius = 10;
-            //     cursorZone.x = x;
-            //     cursorZone.y = y;
-            // }
-            // else {
-            //     cursorZone.radius = 0;
-            // }
 
             // draw radii when adding a new zone
             if (newZoneRef.current != null) {
@@ -114,11 +173,9 @@ export default function GridDisplay(props: { grid: HyperGrid, newZone: Wandering
             {
                 props.grid.setCell(x, y, true);
                 props.onClick(x, y);
-                // props.grid.update();
             }
         }
         
-        // on mouse hovered in range of canvas
         sketch.mouseMoved = () => {
             const x = Math.floor((sketch.mouseX / canvasSize) * props.grid.size);
             const y = Math.floor((sketch.mouseY / canvasSize) * props.grid.size);
@@ -132,15 +189,13 @@ export default function GridDisplay(props: { grid: HyperGrid, newZone: Wandering
                 props.grid.getCursorZone().radius = 0;
             }
         }
-
-
     }
 
     const myRef: any = React.createRef()
     useEffect(() => {
         const view = new p5(Sketch, myRef.current);
-		return view.remove; // This removes the duplicate canvas when the component is rerendered.
-  	}, []);
+        return view.remove;
+    }, [props.useRandomColors]); // Re-render when useRandomColors changes
   
     return (<div className="CanvasContainer" ref={myRef}></div>)
 }
