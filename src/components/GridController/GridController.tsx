@@ -23,7 +23,6 @@ import ExampleSelect from '../ExampleSelect/ExampleSelect';
 import RandomizeButton from '../RandomizeButton/RandomizeButton';
 import { Example } from '../../automata/examples';
 import ColorSwitch from '../ColorSwitch/ColorSwitch';
-import Draggable from '../Draggable/Draggable';
 
 enum ControllerState {
   Normal = 0,
@@ -212,60 +211,66 @@ export default function GridController(props: { grid: HyperGrid }) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: 'center'}}>
-            <div style={{position: 'relative', width: '100%'}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '25px', alignItems: ''}}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <GridDisplay 
                     grid={props.grid} 
                     newZone={newZone} 
                     onClick={onGridClick}
                     useRandomColors={useRandomColors}
                 />
+                { controllerState != ControllerState.Normal && <p style={{color: 'white'}}>Click the grid three times to define the location, radius, and range of the rule.</p> }
+                <div style={{ 
+                                padding: '20px',
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center'
+                            }}>
+                    <PlayButton running={running} setRunning={handleSetRunning} />
+                    <SpeedSlider min={0} max={1000} setInterval={changeInterval} value={speed} />
+                    <RuleSelect 
+                        key={`base-rule-${getRuleText(props.grid.rule)}`}
+                        rules={rule_map} 
+                        default={getRuleText(props.grid.rule)} 
+                        onSelect={handleChangeBaseRule}
+                    />
+                    <ClearButton onClick={handleClearGrid} />
+                    <RandomizeButton onClick={handleRandomize} />
+                    <ColorSwitch checked={useRandomColors} onChange={setUseRandomColors} />
+                    { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
+                </div>
+                <div style={{ 
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center'
+                            }}>
+                    <p>{"Cursor rule: "}</p>
+                    <RuleSelect 
+                        key={`cursor-rule-${getRuleText(props.grid.getCursorZone().rule)}`}
+                        rules={rule_map} 
+                        default={getRuleText(props.grid.getCursorZone().rule)} 
+                        onSelect={handleChangeCursorRule}
+                    />
+                </div>
+                <div style={{ 
+                                display: 'flex',
+                                gap: '10px',
+                                alignItems: 'center',
+                                marginTop: '10px'
+                            }}>
+                    <ExampleSelect grid={props.grid} onSelect={handleLoadExample} />
+                </div>
+            </div>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <ZoneList wzones={props.grid.wanderingZones} />
                 { controllerState != ControllerState.Normal && 
-                    <p style={{color: 'white', position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000}}>
-                        Click the grid three times to define the location, radius, and range of the rule.
-                    </p> 
+                    <RuleSelect 
+                        key={`new-zone-rule-${newZone ? getRuleText(newZone.rule) : 'default'}`}
+                        rules={rule_map} 
+                        default="ConwayLife" 
+                        onSelect={handleSelectRule}
+                    /> 
                 }
-                <Draggable>
-                    <div className="ControlPanel" style={{minWidth: '300px', width: 'auto'}}>
-                        <div className="ControlPanelRow">
-                            <PlayButton running={running} setRunning={handleSetRunning} />
-                            <SpeedSlider min={0} max={1000} setInterval={changeInterval} value={speed} />
-                            <RuleSelect 
-                                key={`base-rule-${getRuleText(props.grid.rule)}`}
-                                rules={rule_map} 
-                                default={getRuleText(props.grid.rule)} 
-                                onSelect={handleChangeBaseRule}
-                            />
-                            <ClearButton onClick={handleClearGrid} />
-                            <RandomizeButton onClick={handleRandomize} />
-                            <ColorSwitch checked={useRandomColors} onChange={setUseRandomColors} />
-                            { controllerState == ControllerState.Normal && <NewRuleButton onClick={handleAddZone}/> }
-                        </div>
-                        <div className="ControlPanelRow">
-                            <p>{"Cursor rule: "}</p>
-                            <RuleSelect 
-                                key={`cursor-rule-${getRuleText(props.grid.getCursorZone().rule)}`}
-                                rules={rule_map} 
-                                default={getRuleText(props.grid.getCursorZone().rule)} 
-                                onSelect={handleChangeCursorRule}
-                            />
-                        </div>
-                        <div className="ControlPanelRow">
-                            <ExampleSelect grid={props.grid} onSelect={handleLoadExample} />
-                        </div>
-                        <div className="RuleList">
-                            <ZoneList wzones={props.grid.wanderingZones} />
-                            { controllerState != ControllerState.Normal && 
-                                <RuleSelect 
-                                    key={`new-zone-rule-${newZone ? getRuleText(newZone.rule) : 'default'}`}
-                                    rules={rule_map} 
-                                    default="ConwayLife" 
-                                    onSelect={handleSelectRule}
-                                /> 
-                            }
-                        </div>
-                    </div>
-                </Draggable>
             </div>
         </div>
     )
